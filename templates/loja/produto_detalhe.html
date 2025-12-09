@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ produto.nome }} - Brechó Online{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'loja:index' %}">Início</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'loja:index' %}?categoria={{ produto.categoria.slug }}">{{ produto.categoria.nome }}</a></li>
+            <li class="breadcrumb-item active">{{ produto.nome }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-6">
+            {% if produto.imagem %}
+                <img src="{{ produto.imagem.url }}" class="img-fluid rounded shadow" alt="{{ produto.nome }}">
+            {% else %}
+                <div class="bg-light rounded shadow d-flex align-items-center justify-content-center" style="height: 400px;">
+                    <i class="bi bi-image text-muted" style="font-size: 5rem;"></i>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="col-md-6">
+            <h1>{{ produto.nome }}</h1>
+            
+            <div class="my-3">
+                <span class="badge bg-info me-2">Tamanho: {{ produto.get_tamanho_display }}</span>
+                <span class="badge bg-secondary me-2">{{ produto.get_condicao_display }}</span>
+                <span class="badge bg-primary">{{ produto.categoria.nome }}</span>
+            </div>
+
+            <div class="price mb-4">
+                <h2 class="text-success">R$ {{ produto.preco }}</h2>
+            </div>
+
+            {% if produto.descricao %}
+                <div class="mb-4">
+                    <h5>Descrição</h5>
+                    <p class="text-muted">{{ produto.descricao|linebreaks }}</p>
+                </div>
+            {% endif %}
+
+            <div class="d-grid gap-2 d-md-flex">
+                {% csrf_token %}
+                <button onclick="adicionarAoCarrinho({{ produto.id }}, this)" 
+                        class="btn btn-cart btn-lg me-md-2 text-white">
+                    <i class="bi bi-cart-plus"></i> Adicionar ao Carrinho
+                </button>
+                <a href="{% url 'carrinho:ver_carrinho' %}" class="btn btn-outline-primary btn-lg">
+                    <i class="bi bi-cart3"></i> Ver Carrinho
+                </a>
+            </div>
+
+            <div class="mt-4 p-3 bg-light rounded">
+                <h6><i class="bi bi-info-circle"></i> Informações do Produto</h6>
+                <ul class="list-unstyled mb-0">
+                    <li><strong>Categoria:</strong> {{ produto.categoria.nome }}</li>
+                    <li><strong>Tamanho:</strong> {{ produto.get_tamanho_display }}</li>
+                    <li><strong>Condição:</strong> {{ produto.get_condicao_display }}</li>
+                    <li><strong>Adicionado em:</strong> {{ produto.criado_em|date:"d/m/Y" }}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Produtos Relacionados -->
+    {% if produtos_relacionados %}
+        <div class="row mt-5">
+            <div class="col-12">
+                <h3>Produtos Relacionados</h3>
+                <hr>
+            </div>
+        </div>
+
+        <div class="row">
+            {% for produto_rel in produtos_relacionados %}
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        {% if produto_rel.imagem %}
+                            <img src="{{ produto_rel.imagem.url }}" class="card-img-top" alt="{{ produto_rel.nome }}" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                            <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                                <i class="bi bi-image text-muted" style="font-size: 2rem;"></i>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="card-body d-flex flex-column">
+                            <h6 class="card-title">{{ produto_rel.nome }}</h6>
+                            <p class="card-text text-muted small flex-grow-1">{{ produto_rel.descricao|truncatechars:60 }}</p>
+                            
+                            <div class="mb-2">
+                                <span class="badge bg-info">{{ produto_rel.get_tamanho_display }}</span>
+                                <span class="badge bg-secondary">{{ produto_rel.get_condicao_display }}</span>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="price">R$ {{ produto_rel.preco }}</span>
+                                <a href="{% url 'loja:produto_detalhe' produto_rel.slug %}" 
+                                   class="btn btn-outline-primary btn-sm">Ver</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

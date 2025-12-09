@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Carrinho de Compras - Brechó Online{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h2><i class="bi bi-cart3"></i> Seu Carrinho</h2>
+    <hr>
+
+    {% if itens %}
+        <div class="row">
+            <div class="col-md-8">
+                {% for item in itens %}
+                    <div class="card mb-3">
+                        <div class="row g-0">
+                            <div class="col-md-3">
+                                {% if item.produto.imagem %}
+                                    <img src="{{ item.produto.imagem.url }}" class="img-fluid rounded-start h-100" alt="{{ item.produto.nome }}" style="object-fit: cover;">
+                                {% else %}
+                                    <div class="bg-light rounded-start h-100 d-flex align-items-center justify-content-center">
+                                        <i class="bi bi-image text-muted" style="font-size: 2rem;"></i>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-9">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ item.produto.nome }}</h5>
+                                    <p class="card-text text-muted">{{ item.produto.descricao|truncatechars:100 }}</p>
+                                    
+                                    <div class="mb-3">
+                                        <span class="badge bg-info me-2">{{ item.produto.get_tamanho_display }}</span>
+                                        <span class="badge bg-secondary me-2">{{ item.produto.get_condicao_display }}</span>
+                                        <span class="badge bg-primary">{{ item.produto.categoria.nome }}</span>
+                                    </div>
+
+                                    <div class="row align-items-center">
+                                        <div class="col-md-4">
+                                            <strong class="text-success">R$ {{ item.produto.preco }}</strong>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <form method="post" action="{% url 'carrinho:atualizar_quantidade' item.id %}" class="d-inline">
+                                                {% csrf_token %}
+                                                <div class="input-group input-group-sm">
+                                                    <button class="btn btn-outline-secondary" type="button" onclick="decrementQuantity(this)">-</button>
+                                                    <input type="number" name="quantidade" value="{{ item.quantidade }}" min="1" class="form-control text-center" style="width: 60px;">
+                                                    <button class="btn btn-outline-secondary" type="button" onclick="incrementQuantity(this)">+</button>
+                                                    <button class="btn btn-primary btn-sm" type="submit">
+                                                        <i class="bi bi-check"></i>
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="col-md-4 text-end">
+                                            <strong class="text-success">R$ {{ item.subtotal }}</strong>
+                                            <br>
+                                            <a href="{% url 'carrinho:remover_item' item.id %}" 
+                                               class="btn btn-outline-danger btn-sm mt-1"
+                                               onclick="return confirm('Tem certeza que deseja remover este item?')">
+                                                <i class="bi bi-trash"></i> Remover
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Resumo do Pedido -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="bi bi-receipt"></i> Resumo do Pedido</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-3">
+                            <span>Total de itens:</span>
+                            <span>{{ itens.count }}</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between mb-3">
+                            <strong>Total:</strong>
+                            <strong class="text-success fs-4">R$ {{ total }}</strong>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'carrinho:finalizar_compra' %}" class="btn btn-success btn-lg">
+                                <i class="bi bi-whatsapp"></i> Finalizar Compra
+                            </a>
+                            <a href="{% url 'loja:index' %}" class="btn btn-outline-primary">
+                                <i class="bi bi-arrow-left"></i> Continuar Comprando
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-cart-x text-muted" style="font-size: 5rem;"></i>
+            <h3 class="text-muted mt-3">Seu carrinho está vazio</h3>
+            <p>Adicione alguns produtos incríveis do nosso brechó!</p>
+            <a href="{% url 'loja:index' %}" class="btn btn-success btn-lg">
+                <i class="bi bi-shop"></i> Começar a Comprar
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+function incrementQuantity(button) {
+    const input = button.previousElementSibling;
+    input.value = parseInt(input.value) + 1;
+}
+
+function decrementQuantity(button) {
+    const input = button.nextElementSibling;
+    const currentValue = parseInt(input.value);
+    if (currentValue > 1) {
+        input.value = currentValue - 1;
+    }
+}
+</script>
+{% endblock %}
