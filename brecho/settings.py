@@ -78,7 +78,6 @@ WSGI_APPLICATION = "brecho.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
-
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -92,7 +91,7 @@ DATABASES = {
 #         "ENGINE": "django.db.backends.postgresql",
 #         "NAME": "brecho_db",
 #         "USER": "postgres",
-#         "PASSWORD": "postgres",
+#         "PASSWORD": "admin123",
 #         "HOST": "localhost",
 #         "PORT": "5432",
 #     }
@@ -128,6 +127,12 @@ TIME_ZONE = "America/Sao_Paulo"
 USE_I18N = True
 
 USE_TZ = True
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
+FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880
 
 
 # Static files (CSS, JavaScript, Images)

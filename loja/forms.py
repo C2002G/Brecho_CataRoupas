@@ -1,7 +1,8 @@
 from django import forms
+from django.forms import modelformset_factory
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Fieldset, Submit, Row, Column
-from .models import Produto, Categoria
+from .models import Produto, Categoria, ProdutoImagem
 
 
 class ProdutoForm(forms.ModelForm):
@@ -61,3 +62,18 @@ class CategoriaForm(forms.ModelForm):
         self.helper.layout = Layout(
             "nome", Submit("submit", "Criar Categoria", css_class="btn btn-success")
         )
+
+
+class ProdutoImagemForm(forms.ModelForm):
+    class Meta:
+        model = ProdutoImagem
+        fields = ["imagem", "ordem"]
+        widgets = {
+            "ordem": forms.NumberInput(attrs={"min": 0, "step": 1}),
+        }
+
+
+# Formset para múltiplas imagens
+ProdutoImagemFormSet = modelformset_factory(
+    ProdutoImagem, form=ProdutoImagemForm, extra=3, can_delete=True
+)

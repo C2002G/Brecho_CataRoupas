@@ -33,11 +33,8 @@
                             {% endfor %}
                         {% endif %}
 
-                        <form method="post">
-                            {% csrf_token %}
-                            {% load crispy_forms_tags %}
-                            {{ form|crispy }}
-                        </form>
+                        {% load crispy_forms_tags %}
+                        {% crispy form %}
                     </div>
                 </div>
             </div>

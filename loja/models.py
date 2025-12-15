@@ -66,3 +66,20 @@ class Produto(models.Model):
 
     def get_absolute_url(self):
         return reverse("loja:produto_detalhe", args=[self.slug])
+
+
+class ProdutoImagem(models.Model):
+    produto = models.ForeignKey(
+        Produto, on_delete=models.CASCADE, related_name="imagens"
+    )
+    imagem = models.ImageField(upload_to="produtos/")
+    ordem = models.PositiveIntegerField(default=0)
+    criado_em = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Imagem do Produto"
+        verbose_name_plural = "Imagens dos Produtos"
+        ordering = ["ordem", "criado_em"]
+
+    def __str__(self):
+        return f"Imagem {self.ordem} - {self.produto.nome}"

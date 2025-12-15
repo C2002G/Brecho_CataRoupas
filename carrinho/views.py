@@ -114,22 +114,30 @@ def finalizar_compra(request):
         pedido_data["total"] = float(total)
 
         # Formatar mensagem para WhatsApp
-        mensagem = f"🛍️ *NOVO PEDIDO - BRECHÓ*\n\n"
+        mensagem = f"👋 *Olá! Temos um novo pedido do Brechó Online!*\n\n"
+        mensagem += f"🛍️ *DETALHES DO PEDIDO*\n"
+        mensagem += f"━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
         mensagem += f"👤 *Cliente:* {nome}\n"
         mensagem += f"📱 *Telefone:* {telefone}\n"
-        mensagem += f"📍 *Endereço:* {endereco}\n\n"
-        mensagem += "*📦 Itens do Pedido:*\n"
+        mensagem += f"📍 *Endereço de Entrega:*\n{endereco}\n\n"
+        mensagem += f"📦 *PRODUTOS SELECIONADOS:*\n"
+        mensagem += f"━━━━━━━━━━━━━━━━━━━━━━━━━\n"
 
         for item in pedido_data["itens"]:
-            mensagem += f"• {item['produto']} - {item['quantidade']}x - R$ {item['preco_unitario']:.2f}\n"
+            subtotal = item["subtotal"]
+            mensagem += f"▪️ *{item['produto']}*\n"
+            mensagem += f"   Quantidade: {item['quantidade']}x\n"
+            mensagem += f"   Valor unitário: R$ {item['preco_unitario']:.2f}\n"
+            mensagem += f"   Subtotal: R$ {subtotal:.2f}\n\n"
 
-        mensagem += f"\n💰 *Total: R$ {total:.2f}*\n\n"
+        mensagem += f"━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        mensagem += f"💰 *VALOR TOTAL: R$ {total:.2f}*\n\n"
         mensagem += (
-            f"```json\n{json.dumps(pedido_data, indent=2, ensure_ascii=False)}\n```"
+            f"📞 *Entre em contato para confirmar o pedido e combinar a entrega!*\n"
         )
+        mensagem += f"Obrigado pela preferência! ✨"
 
-        # Número da dona da loja (substitua pelo número real)
-        numero_whatsapp = "5511999999999"  # Exemplo: +55 11 99999-9999
+        numero_whatsapp = "5551992409119"
 
         # URL do WhatsApp
         whatsapp_url = (

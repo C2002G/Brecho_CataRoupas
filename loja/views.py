@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from .models import Produto, Categoria
-from .forms import ProdutoForm, CategoriaForm
+from .forms import ProdutoForm, CategoriaForm, ProdutoImagemFormSet
 
 
 class LojaView(ListView):
@@ -84,15 +84,41 @@ def admin_produto_form(request, produto_id=None):
 
     if request.method == "POST":
         form = ProdutoForm(request.POST, request.FILES, instance=produto)
-        if form.is_valid():
-            form.save()
+        formset = ProdutoImagemFormSet(
+            request.POST,
+            request.FILES,
+            queryset=produto.imagens.all() if produto else ProdutoImagem.objects.none(),
+        )
+
+        if form.is_valid() and formset.is_valid():
+            produto_salvo = form.save()
+
+            # Salvar imagens
+            for form_imagem in formset:
+                if form_imagem.cleaned_data and not form_imagem.cleaned_data.get(
+                    "DELETE", False
+                ):
+                    if form_imagem.cleaned_data.get("imagem"):
+                        imagem = form_imagem.save(commit=False)
+                        imagem.produto = produto_salvo
+                        imagem.save()
+
+            # Deletar imagens marcadas para exclusão
+            for form_imagem in formset.deleted_forms:
+                if form_imagem.instance.pk:
+                    form_imagem.instance.delete()
+
             messages.success(request, "Produto salvo com sucesso!")
             return redirect("loja:admin_dashboard")
     else:
         form = ProdutoForm(instance=produto)
+        formset = ProdutoImagemFormSet(
+            queryset=produto.imagens.all() if produto else ProdutoImagem.objects.none()
+        )
 
     context = {
         "form": form,
+        "formset": formset,
         "produto": produto,
     }
     return render(request, "loja/admin_produto_form.html", context)

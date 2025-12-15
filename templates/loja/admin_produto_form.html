@@ -35,6 +35,62 @@
                     {% csrf_token %}
                     {% load crispy_forms_tags %}
                     {{ form|crispy }}
+                    
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h5><i class="bi bi-images"></i> Imagens do Produto</h5>
+                            <small class="text-muted">Adicione até 3 imagens para o produto. A primeira será a imagem principal.</small>
+                        </div>
+                        <div class="card-body">
+                            {{ formset.management_form }}
+                            {% for form_imagem in formset %}
+                                <div class="row mb-3 image-form">
+                                    <div class="col-md-6">
+                                        {{ form_imagem.imagem.label_tag }}
+                                        {{ form_imagem.imagem }}
+                                        {% if form_imagem.imagem.errors %}
+                                            <div class="text-danger small">{{ form_imagem.imagem.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-3">
+                                        {{ form_imagem.ordem.label_tag }}
+                                        {{ form_imagem.ordem }}
+                                        {% if form_imagem.ordem.errors %}
+                                            <div class="text-danger small">{{ form_imagem.ordem.errors }}</div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-3">
+                                        {% if form_imagem.instance.pk %}
+                                            <div class="form-check mt-4">
+                                                {{ form_imagem.DELETE }}
+                                                <label class="form-check-label text-danger" for="{{ form_imagem.DELETE.id_for_label }}">
+                                                    Remover imagem
+                                                </label>
+                                            </div>
+                                        {% endif %}
+                                        {{ form_imagem.id }}
+                                    </div>
+                                </div>
+                                {% if form_imagem.instance.imagem %}
+                                    <div class="row mb-3">
+                                        <div class="col-12">
+                                            <img src="{{ form_imagem.instance.imagem.url }}" class="img-thumbnail" style="max-height: 150px;" alt="Imagem atual">
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                <hr>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-save"></i> Salvar Produto
+                        </button>
+                        <a href="{% url 'loja:admin_dashboard' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Voltar ao Dashboard
+                        </a>
+                    </div>
                 </form>
             </div>
             
