@@ -1,0 +1,20 @@
+{
+  "builds": [
+    {
+      "src": "brecho/wsgi.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "brecho/wsgi.py"
+    }
+  ],
+  "env": {
+    "DEBUG": "False",
+    "SECRET_KEY": "@secret_key",
+    "ALLOWED_HOSTS": "@allowed_hosts",
+    "DATABASE_URL": "@database_url"
+  }
+}
